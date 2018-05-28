@@ -6,10 +6,10 @@
 name: tom0li
 
 # Short bio or description (displayed in the header)
-description: My personal blog by tom0li, Web sec RFID pentest Researcher
+description: Web sec RFID pentest Researcher
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
-avatar: https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/tou.jpg
+avatar: https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/tou.jpg
 
 #
 # Flags below are optional
@@ -18,11 +18,9 @@ avatar: https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/to
 # Includes an icon in the footer for each username you enter
 footer-links:
   dribbble:
-  email:
+  email: tom0li@qq.com
   facebook:
-  flickr:
   github: "tom0li"
-  instagram:
   linkedin:
   pinterest:
   rss: /atom.xml # just type anything here for a working RSS icon
@@ -37,7 +35,7 @@ footer-links:
 disqus:
 
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
-google_analytics:
+google_analytics: 
 
 # Your website URL (e.g. http://barryclark.github.io or http://www.barryclark.co)
 # Used for Sitemap.xml and your RSS feed
@@ -73,7 +71,7 @@ sass:
   style: :expanded # You might prefer to minify using :compressed
 
 # Use the following plug-ins
-gems:
+plugins:
   - jekyll-sitemap # Create a sitemap using the official Jekyll sitemap gem
   - jekyll-feed # Create an Atom feed using the official Jekyll feed gem
 
