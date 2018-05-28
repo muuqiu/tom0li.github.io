@@ -2,7 +2,8 @@
   <p>总结一下常见逻辑漏洞</p>
 </blockquote>
 
-<h3 id="常见点">常见点</h3>
+<h2 id="常见点">常见点</h2>
+<hr />
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	个人信息
 	密码修改
@@ -12,7 +13,8 @@
 	地址
 </code></pre></div></div>
 
-<h2 id="0x01-登陆处不局限登陆例如下文的短信轰炸等">0x01 登陆处（不局限登陆，例如下文的短信轰炸等）</h2>
+<h1 id="0x01-登陆处不局限登陆例如下文的短信轰炸等">0x01 登陆处（不局限登陆，例如下文的短信轰炸等）</h1>
+<hr />
 
 <p>登陆时，是否可以绕过验证码形成撞库</p>
 
@@ -36,11 +38,11 @@
 
 <p>isVerfi参数     这里是1 回包 3 手机没收到信息 存在验证码限制</p>
 
-<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑1.png" alt="60s验证码" /></p>
+<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑1.png" alt="60s验证码" /></p>
 
 <p>改为0 回显2  绕过了验证码限制</p>
 
-<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑2.png" alt="60s验证码" /></p>
+<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑2.png" alt="60s验证码" /></p>
 
 <p>枚举注册用户 输入用户名，发送请求验证用户名是否正确(若返回次数限制,可测试服务端未限制高频访问)</p>
 
@@ -55,6 +57,7 @@ https://api.weibo.com/oauth2/sso_authorize?sflag=1
 修改response中uid，服务端没有校验客户端提交的uid与授权成功的uid相同)</p>
 
 <h2 id="0x02-密码找回">0x02 密码找回</h2>
+<hr />
 
 <ul>
   <li>验证码回传</li>
@@ -66,7 +69,7 @@ https://api.weibo.com/oauth2/sso_authorize?sflag=1
   <li>假如找回需要4部，最后一部有user参数，用自己账号正常到第三部，第四部修改user实现</li>
 </ul>
 
-<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑3.png" alt="逻辑" /></p>
+<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑3.png" alt="逻辑" /></p>
 
 <ul>
   <li>可以跳步找回（直接访问页面）</li>
@@ -84,19 +87,19 @@ https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=31203&amp;ctid=48</li>
 第一个手机<br />
 正常 忘记密码 到第三步</p>
 
-<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑4.png" alt="逻辑" /></p>
+<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑4.png" alt="逻辑" /></p>
 
 <p>在同一浏览器下
 第二手机号
 忘记密码 提交到第二部</p>
 
-<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑5.png" alt="逻辑" /></p>
+<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑5.png" alt="逻辑" /></p>
 
 <p>刷新 第一个手机的第三部时可 发现 用户名变为第二个手机</p>
 
-<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑6.png" alt="逻辑" /></p>
+<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑6.png" alt="逻辑" /></p>
 
-<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑7.png" alt="逻辑" /></p>
+<p><img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑7.png" alt="逻辑" /></p>
 
 <ul>
   <li>邮箱同上</li>
@@ -104,6 +107,7 @@ https://bbs.ichunqiu.com/forum.php?mod=viewthread&amp;tid=31203&amp;ctid=48</li>
 </ul>
 
 <h2 id="0x03-支付">0x03 支付</h2>
+<hr />
 
 <ul>
   <li>金额运费修改</li>
@@ -135,13 +139,14 @@ req=%7B%22sg%22%3A%220e1d1663-803f-4f0d-962c-6efdd953bfb0%22%2C%22opass%22%3A%5B
 https://threathunter.org/topic/5942363d44a81b6215130e29
 http://60.205.228.7/?p=278</li>
   <li>参数污染 请求没该参数，却返回该参数，可请求该参数污染返回值
-<img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑8.png" alt="逻辑" />
-<img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/img/逻辑9.png" alt="逻辑" /></li>
+<img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑8.png" alt="逻辑" />
+<img src="https://raw.githubusercontent.com/tom0li/tom0li.github.io/master/images/逻辑9.png" alt="逻辑" /></li>
 </ul>
 
 <p>实例 https://threathunter.org/topic/593ff6bc9c58e020408a79d4</p>
 
 <h2 id="0x04-越权">0x04 越权</h2>
+<hr />
 
 <ul>
   <li>改识别用户参数</li>
@@ -157,9 +162,11 @@ http://60.205.228.7/?p=278</li>
 http://static.hx99.net/static/drops/tips-727.html</p>
 
 <h3 id="注册">注册</h3>
+<hr />
 <p>恶意注册</p>
 
 <h2 id="0x05-总结">0x05 总结</h2>
+<hr />
 
 <p>认真加耐心，谦虚学习</p>
 
