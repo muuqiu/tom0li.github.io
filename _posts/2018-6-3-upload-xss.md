@@ -1,5 +1,5 @@
 ---
-title: [译] upload-xss
+title: 翻译 upload-xss
 date: 2018-6-3 1:50:30
 tags: Web安全
 toc: true
